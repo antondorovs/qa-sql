@@ -61,7 +61,8 @@ SELECT
     total_payment_amount,
     average_payment_amount,
     timestamped_payment_count,
-    missing_paid_at_count
+    missing_paid_at_count,
+    timestamp_coverage_percent
 FROM payment_status_summary
 ORDER BY payment_status;
 

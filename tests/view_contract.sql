@@ -43,6 +43,7 @@ DECLARE
     actual_missing_count INTEGER;
     actual_total NUMERIC(10, 2);
     actual_average NUMERIC(10, 2);
+    actual_timestamp_coverage NUMERIC(5, 2);
 BEGIN
     SELECT COUNT(*)
     INTO actual_count
@@ -58,13 +59,15 @@ BEGIN
         total_payment_amount,
         average_payment_amount,
         timestamped_payment_count,
-        missing_paid_at_count
+        missing_paid_at_count,
+        timestamp_coverage_percent
     INTO
         actual_count,
         actual_total,
         actual_average,
         actual_timestamped_count,
-        actual_missing_count
+        actual_missing_count,
+        actual_timestamp_coverage
     FROM payment_status_summary
     WHERE payment_status = 'SUCCESS';
 
@@ -72,29 +75,41 @@ BEGIN
         OR actual_total <> 480.50
         OR actual_average <> 96.10
         OR actual_timestamped_count <> 5
-        OR actual_missing_count <> 0 THEN
+        OR actual_missing_count <> 0
+        OR actual_timestamp_coverage <> 100.00 THEN
         RAISE EXCEPTION
-            'Unexpected SUCCESS payment summary: count=%, total=%, average=%, timestamped=%, missing=%',
+            'Unexpected SUCCESS payment summary: count=%, total=%, average=%, timestamped=%, missing=%, coverage=%',
             actual_count,
             actual_total,
             actual_average,
             actual_timestamped_count,
-            actual_missing_count;
+            actual_missing_count,
+            actual_timestamp_coverage;
     END IF;
 
-    SELECT payment_count, timestamped_payment_count, missing_paid_at_count
-    INTO actual_count, actual_timestamped_count, actual_missing_count
+    SELECT
+        payment_count,
+        timestamped_payment_count,
+        missing_paid_at_count,
+        timestamp_coverage_percent
+    INTO
+        actual_count,
+        actual_timestamped_count,
+        actual_missing_count,
+        actual_timestamp_coverage
     FROM payment_status_summary
     WHERE payment_status = 'PENDING';
 
     IF actual_count <> 1
         OR actual_timestamped_count <> 0
-        OR actual_missing_count <> 1 THEN
+        OR actual_missing_count <> 1
+        OR actual_timestamp_coverage <> 0.00 THEN
         RAISE EXCEPTION
-            'Unexpected PENDING payment summary: count=%, timestamped=%, missing=%',
+            'Unexpected PENDING payment summary: count=%, timestamped=%, missing=%, coverage=%',
             actual_count,
             actual_timestamped_count,
-            actual_missing_count;
+            actual_missing_count,
+            actual_timestamp_coverage;
     END IF;
 
     SELECT

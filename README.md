@@ -130,9 +130,9 @@ The `payment_method_summary` view aggregates checkout coverage by payment
 method, including successful, failed, pending, and refunded outcomes with
 their amounts, average payment size, and the unsettled balance requiring
 follow-up, alongside timestamp coverage.
-The `payment_status_summary` view makes payment lifecycle totals and timestamp
-coverage and average payment size easy to review by status, including pending,
-failed, and refunded payments.
+The `payment_status_summary` view makes payment lifecycle totals, average
+payment size, and timestamp coverage (including its percentage) easy to review
+by status, including pending, failed, and refunded payments.
 The `country_user_order_summary` view compares user and order coverage by
 country.
 The `primary_address_coverage_summary` view shows primary address coverage by

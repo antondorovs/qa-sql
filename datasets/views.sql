@@ -396,7 +396,11 @@ SELECT
     COALESCE(SUM(amount), 0.00) AS total_payment_amount,
     COALESCE(AVG(amount), 0.00) AS average_payment_amount,
     COUNT(*) FILTER (WHERE paid_at IS NOT NULL) AS timestamped_payment_count,
-    COUNT(*) FILTER (WHERE paid_at IS NULL) AS missing_paid_at_count
+    COUNT(*) FILTER (WHERE paid_at IS NULL) AS missing_paid_at_count,
+    ROUND(
+        100.0 * COUNT(*) FILTER (WHERE paid_at IS NOT NULL) / NULLIF(COUNT(*), 0),
+        2
+    ) AS timestamp_coverage_percent
 FROM payments
 GROUP BY status;
 
