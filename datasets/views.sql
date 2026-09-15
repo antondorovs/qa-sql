@@ -385,7 +385,11 @@ SELECT
         0.00
     ) AS unsettled_payment_amount,
     COUNT(*) FILTER (WHERE paid_at IS NOT NULL) AS timestamped_payment_count,
-    COUNT(*) FILTER (WHERE paid_at IS NULL) AS missing_paid_at_count
+    COUNT(*) FILTER (WHERE paid_at IS NULL) AS missing_paid_at_count,
+    ROUND(
+        100.0 * COUNT(*) FILTER (WHERE paid_at IS NOT NULL) / NULLIF(COUNT(*), 0),
+        2
+    ) AS timestamp_coverage_percent
 FROM payments
 GROUP BY payment_method;
 

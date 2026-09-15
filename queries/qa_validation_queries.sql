@@ -50,7 +50,8 @@ SELECT
     refunded_payment_amount,
     unsettled_payment_amount,
     timestamped_payment_count,
-    missing_paid_at_count
+    missing_paid_at_count,
+    timestamp_coverage_percent
 FROM payment_method_summary
 ORDER BY payment_method;
 

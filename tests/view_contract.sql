@@ -391,6 +391,7 @@ DECLARE
     actual_refunded_total NUMERIC(10, 2);
     actual_unsettled_total NUMERIC(10, 2);
     actual_timestamped_count INTEGER;
+    actual_timestamp_coverage NUMERIC(5, 2);
 BEGIN
     SELECT COUNT(*)
     INTO actual_count
@@ -409,7 +410,8 @@ BEGIN
         successful_payment_amount,
         refunded_count,
         refunded_payment_amount,
-        timestamped_payment_count
+        timestamped_payment_count,
+        timestamp_coverage_percent
     INTO
         actual_count,
         actual_total,
@@ -417,7 +419,8 @@ BEGIN
         actual_successful_total,
         actual_refunded_count,
         actual_refunded_total,
-        actual_timestamped_count
+        actual_timestamped_count,
+        actual_timestamp_coverage
     FROM payment_method_summary
     WHERE payment_method = 'CARD';
 
@@ -427,31 +430,43 @@ BEGIN
         OR actual_successful_total <> 405.50
         OR actual_refunded_count <> 1
         OR actual_refunded_total <> 60.00
-        OR actual_timestamped_count <> 5 THEN
+        OR actual_timestamped_count <> 5
+        OR actual_timestamp_coverage <> 83.33 THEN
         RAISE EXCEPTION
-            'Unexpected CARD payment summary: count=%, total=%, average=%, successful_total=%, refunded_count=%, refunded_total=%, timestamped=%',
+            'Unexpected CARD payment summary: count=%, total=%, average=%, successful_total=%, refunded_count=%, refunded_total=%, timestamped=%, coverage=%',
             actual_count,
             actual_total,
             actual_average,
             actual_successful_total,
             actual_refunded_count,
             actual_refunded_total,
-            actual_timestamped_count;
+            actual_timestamped_count,
+            actual_timestamp_coverage;
     END IF;
 
-    SELECT pending_count, unsettled_payment_amount, missing_paid_at_count
-    INTO actual_count, actual_unsettled_total, actual_missing_count
+    SELECT
+        pending_count,
+        unsettled_payment_amount,
+        missing_paid_at_count,
+        timestamp_coverage_percent
+    INTO
+        actual_count,
+        actual_unsettled_total,
+        actual_missing_count,
+        actual_timestamp_coverage
     FROM payment_method_summary
     WHERE payment_method = 'BANK_TRANSFER';
 
     IF actual_count <> 1
         OR actual_unsettled_total <> 35.99
-        OR actual_missing_count <> 1 THEN
+        OR actual_missing_count <> 1
+        OR actual_timestamp_coverage <> 0.00 THEN
         RAISE EXCEPTION
-            'Unexpected BANK_TRANSFER payment summary: pending=%, unsettled_total=%, missing_paid_at=%',
+            'Unexpected BANK_TRANSFER payment summary: pending=%, unsettled_total=%, missing_paid_at=%, coverage=%',
             actual_count,
             actual_unsettled_total,
-            actual_missing_count;
+            actual_missing_count,
+            actual_timestamp_coverage;
     END IF;
 END
 $$;
