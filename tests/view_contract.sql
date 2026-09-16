@@ -227,6 +227,7 @@ DECLARE
     actual_active_count INTEGER;
     actual_primary_count INTEGER;
     actual_missing_count INTEGER;
+    actual_coverage NUMERIC(5, 2);
 BEGIN
     SELECT COUNT(*)
     INTO actual_count
@@ -238,34 +239,54 @@ BEGIN
             actual_count;
     END IF;
 
-    SELECT active_user_count, primary_address_count, users_without_primary_address_count
-    INTO actual_active_count, actual_primary_count, actual_missing_count
+    SELECT
+        active_user_count,
+        primary_address_count,
+        users_without_primary_address_count,
+        primary_address_coverage_percent
+    INTO
+        actual_active_count,
+        actual_primary_count,
+        actual_missing_count,
+        actual_coverage
     FROM primary_address_coverage_summary
     WHERE country = 'Hungary';
 
     IF actual_active_count <> 2
         OR actual_primary_count <> 1
-        OR actual_missing_count <> 1 THEN
+        OR actual_missing_count <> 1
+        OR actual_coverage <> 50.00 THEN
         RAISE EXCEPTION
-            'Unexpected Hungary address coverage: active=%, primary=%, missing=%',
+            'Unexpected Hungary address coverage: active=%, primary=%, missing=%, coverage=%',
             actual_active_count,
             actual_primary_count,
-            actual_missing_count;
+            actual_missing_count,
+            actual_coverage;
     END IF;
 
-    SELECT active_user_count, primary_address_count, users_without_primary_address_count
-    INTO actual_active_count, actual_primary_count, actual_missing_count
+    SELECT
+        active_user_count,
+        primary_address_count,
+        users_without_primary_address_count,
+        primary_address_coverage_percent
+    INTO
+        actual_active_count,
+        actual_primary_count,
+        actual_missing_count,
+        actual_coverage
     FROM primary_address_coverage_summary
     WHERE country = 'USA';
 
     IF actual_active_count <> 2
         OR actual_primary_count <> 2
-        OR actual_missing_count <> 0 THEN
+        OR actual_missing_count <> 0
+        OR actual_coverage <> 100.00 THEN
         RAISE EXCEPTION
-            'Unexpected USA address coverage: active=%, primary=%, missing=%',
+            'Unexpected USA address coverage: active=%, primary=%, missing=%, coverage=%',
             actual_active_count,
             actual_primary_count,
-            actual_missing_count;
+            actual_missing_count,
+            actual_coverage;
     END IF;
 END
 $$;

@@ -94,7 +94,8 @@ SELECT
     user_count,
     active_user_count,
     primary_address_count,
-    users_without_primary_address_count
+    users_without_primary_address_count,
+    primary_address_coverage_percent
 FROM primary_address_coverage_summary
 ORDER BY country;
 
@@ -152,7 +153,8 @@ SELECT
     country,
     active_user_count,
     primary_address_count,
-    users_without_primary_address_count
+    users_without_primary_address_count,
+    primary_address_coverage_percent
 FROM primary_address_coverage_summary
 WHERE active_user_count > primary_address_count;
 
