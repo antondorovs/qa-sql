@@ -134,7 +134,7 @@ The `payment_status_summary` view makes payment lifecycle totals, average
 payment size, and timestamp coverage (including its percentage) easy to review
 by status, including pending, failed, and refunded payments.
 The `country_user_order_summary` view compares user and order coverage by
-country.
+country, including the order coverage percentage for each country.
 The `primary_address_coverage_summary` view shows primary address coverage by
 country, including the coverage percentage for quick triage.
 The `order_status_payment_summary` view compares payment coverage across order

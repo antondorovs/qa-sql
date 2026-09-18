@@ -298,6 +298,7 @@ DECLARE
     actual_order_count INTEGER;
     actual_without_orders_count INTEGER;
     actual_total NUMERIC(10, 2);
+    actual_coverage NUMERIC(5, 2);
 BEGIN
     SELECT COUNT(*)
     INTO actual_count
@@ -309,33 +310,48 @@ BEGIN
             actual_count;
     END IF;
 
-    SELECT user_count, active_user_count, order_count, total_order_amount
-    INTO actual_count, actual_active_count, actual_order_count, actual_total
+    SELECT
+        user_count,
+        active_user_count,
+        order_count,
+        total_order_amount,
+        order_coverage_percent
+    INTO
+        actual_count,
+        actual_active_count,
+        actual_order_count,
+        actual_total,
+        actual_coverage
     FROM country_user_order_summary
     WHERE country = 'USA';
 
     IF actual_count <> 2
         OR actual_active_count <> 2
         OR actual_order_count <> 3
-        OR actual_total <> 175.50 THEN
+        OR actual_total <> 175.50
+        OR actual_coverage <> 100.00 THEN
         RAISE EXCEPTION
-            'Unexpected USA country summary: users=%, active=%, orders=%, total=%',
+            'Unexpected USA country summary: users=%, active=%, orders=%, total=%, coverage=%',
             actual_count,
             actual_active_count,
             actual_order_count,
-            actual_total;
+            actual_total,
+            actual_coverage;
     END IF;
 
-    SELECT active_user_count, users_without_orders_count
-    INTO actual_active_count, actual_without_orders_count
+    SELECT active_user_count, users_without_orders_count, order_coverage_percent
+    INTO actual_active_count, actual_without_orders_count, actual_coverage
     FROM country_user_order_summary
     WHERE country = 'Canada';
 
-    IF actual_active_count <> 2 OR actual_without_orders_count <> 1 THEN
+    IF actual_active_count <> 2
+        OR actual_without_orders_count <> 1
+        OR actual_coverage <> 50.00 THEN
         RAISE EXCEPTION
-            'Unexpected Canada country summary: active=%, without_orders=%',
+            'Unexpected Canada country summary: active=%, without_orders=%, coverage=%',
             actual_active_count,
-            actual_without_orders_count;
+            actual_without_orders_count,
+            actual_coverage;
     END IF;
 END
 $$;

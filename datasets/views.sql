@@ -309,7 +309,11 @@ SELECT
     COUNT(*) FILTER (WHERE status = 'ACTIVE') AS active_user_count,
     SUM(order_count) AS order_count,
     COALESCE(SUM(total_order_amount), 0.00) AS total_order_amount,
-    COUNT(*) FILTER (WHERE order_count = 0) AS users_without_orders_count
+    COUNT(*) FILTER (WHERE order_count = 0) AS users_without_orders_count,
+    ROUND(
+        100.0 * COUNT(*) FILTER (WHERE order_count > 0) / NULLIF(COUNT(*), 0),
+        2
+    ) AS order_coverage_percent
 FROM user_order_metrics
 GROUP BY country;
 

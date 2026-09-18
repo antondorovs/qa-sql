@@ -84,7 +84,8 @@ SELECT
     active_user_count,
     order_count,
     total_order_amount,
-    users_without_orders_count
+    users_without_orders_count,
+    order_coverage_percent
 FROM country_user_order_summary
 ORDER BY country;
 
@@ -125,7 +126,8 @@ SELECT
     country,
     user_count,
     active_user_count,
-    order_count
+    order_count,
+    order_coverage_percent
 FROM country_user_order_summary
 WHERE order_count = 0;
 
@@ -135,7 +137,8 @@ SELECT
     user_count,
     active_user_count,
     order_count,
-    users_without_orders_count
+    users_without_orders_count,
+    order_coverage_percent
 FROM country_user_order_summary
 WHERE users_without_orders_count > 0;
 
