@@ -336,7 +336,17 @@ SELECT
     ) AS orders_with_successful_payment_count,
     COUNT(*) FILTER (
         WHERE p.has_payment IS NULL
-    ) AS orders_without_payment_count
+    ) AS orders_without_payment_count,
+    ROUND(
+        100.0 * COUNT(*) FILTER (WHERE p.has_payment) / NULLIF(COUNT(*), 0),
+        2
+    ) AS payment_coverage_percent,
+    ROUND(
+        100.0 * COUNT(*) FILTER (
+            WHERE p.has_successful_payment
+        ) / NULLIF(COUNT(*), 0),
+        2
+    ) AS successful_payment_coverage_percent
 FROM orders o
 LEFT JOIN payment_flags p
     ON o.id = p.order_id

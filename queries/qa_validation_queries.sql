@@ -107,7 +107,9 @@ SELECT
     total_order_amount,
     orders_with_payment_count,
     orders_with_successful_payment_count,
-    orders_without_payment_count
+    orders_without_payment_count,
+    payment_coverage_percent,
+    successful_payment_coverage_percent
 FROM order_status_payment_summary
 ORDER BY order_status;
 

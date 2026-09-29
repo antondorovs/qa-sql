@@ -161,6 +161,8 @@ DECLARE
     actual_successful_payment_count INTEGER;
     actual_without_payment_count INTEGER;
     actual_total NUMERIC(10, 2);
+    actual_payment_coverage NUMERIC(5, 2);
+    actual_successful_coverage NUMERIC(5, 2);
 BEGIN
     SELECT COUNT(*)
     INTO actual_count
@@ -177,13 +179,17 @@ BEGIN
         total_order_amount,
         orders_with_payment_count,
         orders_with_successful_payment_count,
-        orders_without_payment_count
+        orders_without_payment_count,
+        payment_coverage_percent,
+        successful_payment_coverage_percent
     INTO
         actual_count,
         actual_total,
         actual_with_payment_count,
         actual_successful_payment_count,
-        actual_without_payment_count
+        actual_without_payment_count,
+        actual_payment_coverage,
+        actual_successful_coverage
     FROM order_status_payment_summary
     WHERE order_status = 'PAID';
 
@@ -191,32 +197,47 @@ BEGIN
         OR actual_total <> 365.50
         OR actual_with_payment_count <> 3
         OR actual_successful_payment_count <> 3
-        OR actual_without_payment_count <> 1 THEN
+        OR actual_without_payment_count <> 1
+        OR actual_payment_coverage <> 75.00
+        OR actual_successful_coverage <> 75.00 THEN
         RAISE EXCEPTION
-            'Unexpected PAID summary: orders=%, total=%, with_payment=%, successful=%, without_payment=%',
+            'Unexpected PAID summary: orders=%, total=%, with_payment=%, successful=%, without_payment=%, payment_coverage=%, successful_coverage=%',
             actual_count,
             actual_total,
             actual_with_payment_count,
             actual_successful_payment_count,
-            actual_without_payment_count;
+            actual_without_payment_count,
+            actual_payment_coverage,
+            actual_successful_coverage;
     END IF;
 
     SELECT
         order_count,
         total_order_amount,
-        orders_with_successful_payment_count
-    INTO actual_count, actual_total, actual_successful_payment_count
+        orders_with_successful_payment_count,
+        payment_coverage_percent,
+        successful_payment_coverage_percent
+    INTO
+        actual_count,
+        actual_total,
+        actual_successful_payment_count,
+        actual_payment_coverage,
+        actual_successful_coverage
     FROM order_status_payment_summary
     WHERE order_status = 'NEW';
 
     IF actual_count <> 2
         OR actual_total <> 85.89
-        OR actual_successful_payment_count <> 0 THEN
+        OR actual_successful_payment_count <> 0
+        OR actual_payment_coverage <> 100.00
+        OR actual_successful_coverage <> 0.00 THEN
         RAISE EXCEPTION
-            'Unexpected NEW summary: orders=%, total=%, successful=%',
+            'Unexpected NEW summary: orders=%, total=%, successful=%, payment_coverage=%, successful_coverage=%',
             actual_count,
             actual_total,
-            actual_successful_payment_count;
+            actual_successful_payment_count,
+            actual_payment_coverage,
+            actual_successful_coverage;
     END IF;
 END
 $$;
