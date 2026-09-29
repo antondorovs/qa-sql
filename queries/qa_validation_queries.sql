@@ -41,6 +41,7 @@ SELECT
     payment_method,
     payment_count,
     success_count,
+    successful_payment_rate_percent,
     failed_count,
     pending_count,
     refunded_count,

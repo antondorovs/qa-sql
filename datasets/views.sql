@@ -383,6 +383,10 @@ SELECT
     payment_method,
     COUNT(*) AS payment_count,
     COUNT(*) FILTER (WHERE status = 'SUCCESS') AS success_count,
+    ROUND(
+        100.0 * COUNT(*) FILTER (WHERE status = 'SUCCESS') / NULLIF(COUNT(*), 0),
+        2
+    ) AS successful_payment_rate_percent,
     COUNT(*) FILTER (WHERE status = 'FAILED') AS failed_count,
     COUNT(*) FILTER (WHERE status = 'PENDING') AS pending_count,
     COUNT(*) FILTER (WHERE status = 'REFUNDED') AS refunded_count,

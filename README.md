@@ -129,7 +129,7 @@ severity for faster triage.
 The `payment_method_summary` view aggregates checkout coverage by payment
 method, including successful, failed, pending, and refunded outcomes with
 their amounts, average payment size, and the unsettled balance requiring
-follow-up, alongside timestamp coverage and its percentage.
+follow-up, alongside successful-payment and timestamp coverage percentages.
 The `payment_status_summary` view makes payment lifecycle totals, average
 payment size, and timestamp coverage (including its percentage) easy to review
 by status, including pending, failed, and refunded payments.
