@@ -48,6 +48,7 @@ SELECT
     total_payment_amount,
     average_payment_amount,
     successful_payment_amount,
+    successful_payment_amount_percent,
     refunded_payment_amount,
     unsettled_payment_amount,
     timestamped_payment_count,

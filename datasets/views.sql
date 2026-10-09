@@ -396,6 +396,13 @@ SELECT
         SUM(amount) FILTER (WHERE status = 'SUCCESS'),
         0.00
     ) AS successful_payment_amount,
+    ROUND(
+        100.0 * COALESCE(
+            SUM(amount) FILTER (WHERE status = 'SUCCESS'),
+            0.00
+        ) / NULLIF(COALESCE(SUM(amount), 0.00), 0.00),
+        2
+    ) AS successful_payment_amount_percent,
     COALESCE(
         SUM(amount) FILTER (WHERE status = 'REFUNDED'),
         0.00
