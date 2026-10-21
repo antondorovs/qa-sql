@@ -8,6 +8,8 @@ The repository includes a repeatable test suite that creates the lab from scratc
 - Dataset row counts match the documented sample data.
 - Intentional QA defects remain available for exercises.
 - Reusable views return stable columns and expected classifications.
+- Address coverage counts users once when duplicate primary addresses exist,
+  excludes deleted users and orphan addresses, and retains users without addresses.
 - Every SQL example and solution executes successfully.
 
 The checks treat the known bad records as test fixtures. A duplicate email or orphan payment is expected in this lab, so the tests verify that each scenario exists exactly once.

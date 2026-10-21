@@ -138,6 +138,9 @@ The `country_user_order_summary` view compares user and order coverage by
 country, including the order coverage percentage for each country.
 The `primary_address_coverage_summary` view shows primary address coverage by
 country, including the coverage percentage for quick triage.
+User counts and coverage count each non-deleted user once, even when a user has
+multiple primary addresses. `primary_address_count` still counts address records
+so duplicate primary addresses remain visible.
 The `order_status_payment_summary` view compares payment coverage across order
 statuses without double-counting orders that have multiple payment attempts,
 including payment and successful-payment coverage percentages.

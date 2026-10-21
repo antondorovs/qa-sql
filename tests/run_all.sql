@@ -16,6 +16,7 @@
 
 \echo 'Checking view contracts'
 \ir view_contract.sql
+\ir address_coverage_contract.sql
 
 \echo 'Checking data quality baseline'
 \ir quality_report_contract.sql

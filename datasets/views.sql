@@ -276,12 +276,15 @@ GROUP BY u.id, u.email, u.country;
 CREATE OR REPLACE VIEW primary_address_coverage_summary AS
 SELECT
     u.country,
-    COUNT(*) AS user_count,
-    COUNT(*) FILTER (WHERE u.status = 'ACTIVE') AS active_user_count,
+    COUNT(DISTINCT u.id) AS user_count,
+    COUNT(DISTINCT u.id) FILTER (WHERE u.status = 'ACTIVE') AS active_user_count,
     COUNT(a.id) AS primary_address_count,
-    COUNT(*) FILTER (WHERE a.id IS NULL) AS users_without_primary_address_count,
-    ROUND(100.0 * COUNT(a.id) / NULLIF(COUNT(*), 0), 2)
-        AS primary_address_coverage_percent
+    COUNT(DISTINCT u.id) FILTER (WHERE a.id IS NULL)
+        AS users_without_primary_address_count,
+    ROUND(
+        100.0 * COUNT(DISTINCT a.user_id) / NULLIF(COUNT(DISTINCT u.id), 0),
+        2
+    ) AS primary_address_coverage_percent
 FROM users u
 LEFT JOIN addresses a
     ON u.id = a.user_id
