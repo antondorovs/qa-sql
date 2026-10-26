@@ -29,6 +29,9 @@ Coverage rules flag active users that still have no order history, countries
 with non-deleted users but no order or primary-address coverage, countries with
 partial user order coverage, and countries where active-user primary address
 coverage is incomplete.
+The active-user primary address rule counts each country with an uncovered,
+non-deleted active user once. Duplicate primary addresses and addresses owned by
+inactive users cannot compensate for another user's missing primary address.
 
 Uniqueness rules cover both user email addresses and order numbers.
 

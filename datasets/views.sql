@@ -881,9 +881,16 @@ WITH rule_results (
         'MEDIUM',
         2::BIGINT,
         (
-            SELECT COUNT(*)
-            FROM primary_address_coverage_summary
-            WHERE active_user_count > primary_address_count
+            SELECT COUNT(DISTINCT u.country)
+            FROM users u
+            WHERE u.status = 'ACTIVE'
+              AND u.deleted_at IS NULL
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM addresses a
+                  WHERE a.user_id = u.id
+                    AND a.is_primary = TRUE
+              )
         )
 
     UNION ALL
