@@ -216,7 +216,8 @@ actual_indexes AS (
             attribute.attname::TEXT
             ORDER BY index_column.ordinality
         ) AS indexed_columns,
-        index_metadata.indisunique AS is_unique
+        index_metadata.indisunique AS is_unique,
+        index_metadata.indpred IS NOT NULL AS is_partial
     FROM pg_index index_metadata
     INNER JOIN pg_class table_class
         ON table_class.oid = index_metadata.indrelid
@@ -235,7 +236,8 @@ actual_indexes AS (
     GROUP BY
         index_class.relname,
         table_class.relname,
-        index_metadata.indisunique
+        index_metadata.indisunique,
+        index_metadata.indpred IS NOT NULL
 )
 SELECT
     COALESCE(e.index_name, a.index_name) AS index_name,
@@ -251,6 +253,7 @@ SELECT
         WHEN e.table_name IS DISTINCT FROM a.table_name
             OR e.indexed_columns IS DISTINCT FROM a.indexed_columns
             OR e.is_unique IS DISTINCT FROM a.is_unique
+            OR a.is_partial
             THEN 'INDEX_DEFINITION_MISMATCH'
         ELSE 'MATCH'
     END AS contract_status
