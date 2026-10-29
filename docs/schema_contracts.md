@@ -32,6 +32,8 @@ or changed primary keys.
 The `index_contract_report` view reads PostgreSQL index metadata from
 `pg_index`, `pg_class`, `pg_namespace`, and `pg_attribute`. It verifies index
 names, table ownership, ordered column lists, uniqueness, and full table coverage.
+All expected supporting indexes use B-tree access; replacing one with a hash or
+other access method reports `INDEX_DEFINITION_MISMATCH`.
 Replacing an expected full index with a partial index reports
 `INDEX_DEFINITION_MISMATCH`, even when the name and indexed columns are unchanged.
 Expression keys remain in the ordered column list as `NULL` entries. Replacing

@@ -217,7 +217,8 @@ actual_indexes AS (
             ORDER BY index_column.ordinality
         ) AS indexed_columns,
         index_metadata.indisunique AS is_unique,
-        index_metadata.indpred IS NOT NULL AS is_partial
+        index_metadata.indpred IS NOT NULL AS is_partial,
+        access_method.amname AS access_method
     FROM pg_index index_metadata
     INNER JOIN pg_class table_class
         ON table_class.oid = index_metadata.indrelid
@@ -225,6 +226,8 @@ actual_indexes AS (
         ON table_namespace.oid = table_class.relnamespace
     INNER JOIN pg_class index_class
         ON index_class.oid = index_metadata.indexrelid
+    INNER JOIN pg_am access_method
+        ON access_method.oid = index_class.relam
     CROSS JOIN LATERAL UNNEST(index_metadata.indkey)
         WITH ORDINALITY AS index_column(attribute_number, ordinality)
     LEFT JOIN pg_attribute attribute
@@ -237,7 +240,8 @@ actual_indexes AS (
         index_class.relname,
         table_class.relname,
         index_metadata.indisunique,
-        index_metadata.indpred IS NOT NULL
+        index_metadata.indpred IS NOT NULL,
+        access_method.amname
 )
 SELECT
     COALESCE(e.index_name, a.index_name) AS index_name,
@@ -254,6 +258,7 @@ SELECT
             OR e.indexed_columns IS DISTINCT FROM a.indexed_columns
             OR e.is_unique IS DISTINCT FROM a.is_unique
             OR a.is_partial
+            OR a.access_method <> 'btree'
             THEN 'INDEX_DEFINITION_MISMATCH'
         ELSE 'MATCH'
     END AS contract_status

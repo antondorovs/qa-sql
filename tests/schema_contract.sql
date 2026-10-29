@@ -109,6 +109,22 @@ BEGIN
             RAISE EXCEPTION 'Restored full index % failed its contract',
                 index_contract.index_name;
         END IF;
+
+        EXECUTE FORMAT('DROP INDEX %I', index_contract.index_name);
+        EXECUTE FORMAT(
+            'CREATE INDEX %I ON %I USING hash (%I)',
+            index_contract.index_name, index_contract.table_name,
+            index_contract.column_name
+        );
+
+        IF NOT EXISTS (
+            SELECT 1 FROM index_contract_report
+            WHERE index_name = index_contract.index_name
+              AND contract_status = 'INDEX_DEFINITION_MISMATCH'
+        ) THEN
+            RAISE EXCEPTION 'Hash index % passed the B-tree index contract',
+                index_contract.index_name;
+        END IF;
     END LOOP;
 END
 $$;
