@@ -227,7 +227,7 @@ actual_indexes AS (
         ON index_class.oid = index_metadata.indexrelid
     CROSS JOIN LATERAL UNNEST(index_metadata.indkey)
         WITH ORDINALITY AS index_column(attribute_number, ordinality)
-    INNER JOIN pg_attribute attribute
+    LEFT JOIN pg_attribute attribute
         ON attribute.attrelid = table_class.oid
        AND attribute.attnum = index_column.attribute_number
     WHERE table_namespace.nspname = CURRENT_SCHEMA()

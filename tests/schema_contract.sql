@@ -114,3 +114,58 @@ END
 $$;
 
 ROLLBACK;
+
+-- Expression keys must remain visible even though they have no table attribute.
+BEGIN;
+DROP INDEX users_email_idx;
+CREATE INDEX users_email_idx ON users (email, LOWER(email));
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM index_contract_report
+        WHERE index_name = 'users_email_idx'
+          AND contract_status = 'INDEX_DEFINITION_MISMATCH'
+    ) THEN
+        RAISE EXCEPTION 'Mixed expression index passed the column index contract';
+    END IF;
+END
+$$;
+
+DROP INDEX users_email_idx;
+CREATE INDEX users_email_idx ON users (LOWER(email));
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM index_contract_report
+        WHERE index_name = 'users_email_idx'
+          AND contract_status = 'INDEX_DEFINITION_MISMATCH'
+    ) THEN
+        RAISE EXCEPTION 'Expression index was not classified as a definition mismatch';
+    END IF;
+END
+$$;
+
+DROP INDEX users_email_idx;
+CREATE INDEX users_email_idx ON users (email);
+CREATE INDEX users_lower_email_idx ON users (LOWER(email));
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM index_contract_report
+        WHERE index_name = 'users_lower_email_idx'
+          AND contract_status = 'UNEXPECTED_INDEX'
+    ) THEN
+        RAISE EXCEPTION 'Unexpected expression index disappeared from the report';
+    END IF;
+
+    IF (SELECT COUNT(*) FROM index_contract_report
+        WHERE contract_status = 'MATCH') <> 4 THEN
+        RAISE EXCEPTION 'Expression index changed unrelated column contracts';
+    END IF;
+END
+$$;
+
+ROLLBACK;

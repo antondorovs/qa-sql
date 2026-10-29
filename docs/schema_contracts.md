@@ -34,6 +34,10 @@ The `index_contract_report` view reads PostgreSQL index metadata from
 names, table ownership, ordered column lists, uniqueness, and full table coverage.
 Replacing an expected full index with a partial index reports
 `INDEX_DEFINITION_MISMATCH`, even when the name and indexed columns are unchanged.
+Expression keys remain in the ordered column list as `NULL` entries. Replacing
+an expected column index with an expression or mixed column/expression index
+reports `INDEX_DEFINITION_MISMATCH`; additional expression indexes report
+`UNEXPECTED_INDEX`.
 
 The lab expects supporting indexes for:
 
