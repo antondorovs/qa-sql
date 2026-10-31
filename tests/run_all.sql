@@ -20,6 +20,7 @@
 
 \echo 'Checking data quality baseline'
 \ir quality_report_contract.sql
+\ir blank_value_contract.sql
 
 \echo 'Running query smoke tests'
 \ir ../queries/filters.sql

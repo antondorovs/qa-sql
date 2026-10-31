@@ -21,6 +21,9 @@ Completeness rules cover required QA review fields such as user ages,
 non-blank user names, user countries, user statuses, order numbers, order
 statuses, payment methods, payment statuses, address cities, address
 countries, and address postal codes.
+Blank-value rules use PostgreSQL's `[[:space:]]` character class, so empty strings,
+spaces, tabs, carriage returns, and line feeds are treated as unfilled values.
+Text containing a non-whitespace character is not classified as blank.
 
 Eligibility rules flag non-positive ages and active accounts that do not meet
 the minimum review age.

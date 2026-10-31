@@ -492,8 +492,8 @@ WITH rule_results (
         (
             SELECT COUNT(*)
             FROM users
-            WHERE BTRIM(first_name) = ''
-               OR BTRIM(last_name) = ''
+            WHERE first_name ~ '^[[:space:]]*$'
+               OR last_name ~ '^[[:space:]]*$'
         )
 
     UNION ALL
@@ -506,7 +506,7 @@ WITH rule_results (
         (
             SELECT COUNT(*)
             FROM users
-            WHERE BTRIM(country) = ''
+            WHERE country ~ '^[[:space:]]*$'
         )
 
     UNION ALL
@@ -536,7 +536,7 @@ WITH rule_results (
         (
             SELECT COUNT(*)
             FROM orders
-            WHERE BTRIM(order_number) = ''
+            WHERE order_number ~ '^[[:space:]]*$'
         )
 
     UNION ALL
@@ -564,7 +564,7 @@ WITH rule_results (
         (
             SELECT COUNT(*)
             FROM addresses
-            WHERE BTRIM(city) = ''
+            WHERE city ~ '^[[:space:]]*$'
         )
 
     UNION ALL
@@ -577,7 +577,7 @@ WITH rule_results (
         (
             SELECT COUNT(*)
             FROM addresses
-            WHERE BTRIM(country) = ''
+            WHERE country ~ '^[[:space:]]*$'
         )
 
     UNION ALL
@@ -1254,7 +1254,7 @@ WITH rule_results (
         (
             SELECT COUNT(*)
             FROM users
-            WHERE BTRIM(status) = ''
+            WHERE status ~ '^[[:space:]]*$'
         )
 
     UNION ALL
@@ -1280,7 +1280,7 @@ WITH rule_results (
         (
             SELECT COUNT(*)
             FROM orders
-            WHERE BTRIM(status) = ''
+            WHERE status ~ '^[[:space:]]*$'
         )
 
     UNION ALL
@@ -1306,7 +1306,7 @@ WITH rule_results (
         (
             SELECT COUNT(*)
             FROM payments
-            WHERE BTRIM(status) = ''
+            WHERE status ~ '^[[:space:]]*$'
         )
 
     UNION ALL
@@ -1319,7 +1319,7 @@ WITH rule_results (
         (
             SELECT COUNT(*)
             FROM payments
-            WHERE BTRIM(payment_method) = ''
+            WHERE payment_method ~ '^[[:space:]]*$'
         )
 
     UNION ALL
