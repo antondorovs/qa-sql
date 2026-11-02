@@ -15,6 +15,7 @@
 \ir schema_contract.sql
 
 \echo 'Checking view contracts'
+\ir payment_lifecycle_contract.sql
 \ir view_contract.sql
 \ir address_coverage_contract.sql
 

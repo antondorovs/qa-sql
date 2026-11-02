@@ -394,8 +394,8 @@ BEGIN
     FROM order_payment_validation
     WHERE qa_status = 'CONSISTENT';
 
-    IF actual_count <> 5 THEN
-        RAISE EXCEPTION 'Expected 5 consistent rows, found %', actual_count;
+    IF actual_count <> 6 THEN
+        RAISE EXCEPTION 'Expected 6 consistent rows, found %', actual_count;
     END IF;
 
     SELECT COUNT(*)
@@ -430,9 +430,9 @@ BEGIN
     FROM order_payment_validation
     WHERE qa_status = 'ORDER_NOT_MARKED_PAID';
 
-    IF actual_count <> 1 THEN
+    IF actual_count <> 0 THEN
         RAISE EXCEPTION
-            'Expected 1 order status mismatch result, found %',
+            'Expected no order status mismatch results, found %',
             actual_count;
     END IF;
 END

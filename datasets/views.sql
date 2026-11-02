@@ -379,8 +379,10 @@ SELECT
         WHEN u.id IS NULL THEN 'MISSING_USER'
         WHEN p.id IS NULL THEN 'MISSING_PAYMENT'
         WHEN o.amount <> p.amount THEN 'AMOUNT_MISMATCH'
-        WHEN o.status = 'PAID' AND p.status <> 'SUCCESS' THEN 'PAYMENT_NOT_SUCCESSFUL'
-        WHEN o.status <> 'PAID' AND p.status = 'SUCCESS' THEN 'ORDER_NOT_MARKED_PAID'
+        WHEN o.status IN ('PAID', 'SHIPPED') AND p.status <> 'SUCCESS'
+            THEN 'PAYMENT_NOT_SUCCESSFUL'
+        WHEN o.status NOT IN ('PAID', 'SHIPPED') AND p.status = 'SUCCESS'
+            THEN 'ORDER_NOT_MARKED_PAID'
         ELSE 'CONSISTENT'
     END AS qa_status
 FROM orders o

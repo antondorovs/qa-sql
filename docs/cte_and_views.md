@@ -41,4 +41,10 @@ The lab provides:
 - `payment_method_summary` for checkout coverage by payment method.
 - `data_quality_rule_summary` for severity-level data quality triage.
 
+`PAID` and `SHIPPED` orders both require successful payments. Moving a paid
+order to `SHIPPED` keeps a matching successful payment `CONSISTENT`; a pending,
+failed, or refunded payment reports `PAYMENT_NOT_SUCCESSFUL`. Successful payments
+on other order statuses report `ORDER_NOT_MARKED_PAID`. Missing records and
+amount mismatches retain their earlier diagnostic priority.
+
 Views do not store independent copies of these rows. Their results reflect the current data in the underlying tables.

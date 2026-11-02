@@ -39,7 +39,7 @@ validation_results AS (
         CASE
             WHEN payment_status IS NULL THEN 'MISSING_PAYMENT'
             WHEN order_amount <> payment_amount THEN 'AMOUNT_MISMATCH'
-            WHEN order_status = 'PAID' AND payment_status <> 'SUCCESS'
+            WHEN order_status IN ('PAID', 'SHIPPED') AND payment_status <> 'SUCCESS'
                 THEN 'PAYMENT_NOT_SUCCESSFUL'
             ELSE 'CONSISTENT'
         END AS qa_status
