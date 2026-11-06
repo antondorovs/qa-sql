@@ -675,6 +675,7 @@ WITH rule_results (
             SELECT COUNT(*)
             FROM addresses
             WHERE postal_code IS NULL
+               OR postal_code ~ '^[[:space:]]*$'
         )
 
     UNION ALL

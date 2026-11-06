@@ -17,6 +17,7 @@ BEGIN
             ('orders', 'status', 'blank_order_status'),
             ('addresses', 'city', 'blank_address_city'),
             ('addresses', 'country', 'blank_address_country'),
+            ('addresses', 'postal_code', 'missing_address_postal_code'),
             ('payments', 'status', 'blank_payment_status'),
             ('payments', 'payment_method', 'blank_payment_method')
         ) AS contracts(table_name, column_name, rule_id)
@@ -58,6 +59,20 @@ BEGIN
             field_contract.table_name, field_contract.column_name)
             USING original_value;
     END LOOP;
+END
+$$;
+
+UPDATE addresses SET postal_code = NULL WHERE id = 1;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM data_quality_rule_report
+        WHERE rule_id = 'missing_address_postal_code'
+          AND actual_issue_count = 1
+    ) THEN
+        RAISE EXCEPTION 'NULL postal code escaped completeness detection';
+    END IF;
 END
 $$;
 

@@ -24,6 +24,8 @@ countries, and address postal codes.
 Blank-value rules use PostgreSQL's `[[:space:]]` character class, so empty strings,
 spaces, tabs, carriage returns, and line feeds are treated as unfilled values.
 Text containing a non-whitespace character is not classified as blank.
+Postal-code completeness also treats `NULL`, empty strings, and whitespace-only
+strings as missing. This checks availability, not country-specific postal formats.
 
 Eligibility rules flag non-positive ages and active accounts that do not meet
 the minimum review age.

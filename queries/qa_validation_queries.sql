@@ -332,7 +332,8 @@ SELECT
     country,
     postal_code
 FROM addresses
-WHERE postal_code IS NULL;
+WHERE postal_code IS NULL
+   OR postal_code ~ '^[[:space:]]*$';
 
 -- Successful payments without paid timestamp
 SELECT id, order_id, status, paid_at
