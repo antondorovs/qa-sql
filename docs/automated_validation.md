@@ -29,3 +29,8 @@ The runner resets the lab tables and views before loading the sample data. Do no
 GitHub Actions starts PostgreSQL 16 and runs the same `tests/run_all.sql` entry point for every push and pull request targeting `main`.
 
 When a SQL statement fails or a dataset contract changes unexpectedly, `psql` exits with an error and the workflow fails.
+
+GitLab CI runs the same SQL suite. Its database readiness wait is limited to
+60 seconds, with a further five seconds before forced termination if needed.
+An unavailable PostgreSQL service therefore fails the job instead of waiting
+indefinitely and holding a runner until the overall job timeout.

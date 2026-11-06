@@ -24,7 +24,7 @@ postgresql-validation:
     - name: postgres:16-alpine
       alias: postgres
   before_script:
-    - until pg_isready; do sleep 1; done
+    - timeout -k 5 60 sh -c 'until pg_isready; do sleep 1; done'
   script:
     - psql --set=ON_ERROR_STOP=1 --file=tests/run_all.sql
   rules:
