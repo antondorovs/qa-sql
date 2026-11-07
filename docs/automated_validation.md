@@ -22,7 +22,9 @@ Create an empty PostgreSQL database and run:
 psql -d qa-sql-lab -v ON_ERROR_STOP=1 -f tests/run_all.sql
 ```
 
-The runner resets the lab tables and views before loading the sample data. Do not run it against a database containing data you need to keep.
+The runner resets the lab tables and views and loads the sample data in one
+transaction. If setup fails, PostgreSQL rolls back that reset and load. A
+successful setup replaces the lab data, so use a disposable database.
 
 ## Continuous integration
 

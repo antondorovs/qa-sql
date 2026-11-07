@@ -1,5 +1,7 @@
 \set ON_ERROR_STOP on
 
+BEGIN;
+
 \echo 'Resetting database objects'
 \ir ../datasets/reset.sql
 
@@ -7,6 +9,8 @@
 \ir ../datasets/schema.sql
 \ir ../datasets/seed_data.sql
 \ir ../datasets/views.sql
+
+COMMIT;
 
 \echo 'Checking dataset contracts'
 \ir data_contract.sql
