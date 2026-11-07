@@ -179,18 +179,18 @@ WHERE email !~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$';
 -- Users with blank names
 SELECT id, first_name, last_name, email
 FROM users
-WHERE BTRIM(first_name) = ''
-   OR BTRIM(last_name) = '';
+WHERE first_name ~ '^[[:space:]]*$'
+   OR last_name ~ '^[[:space:]]*$';
 
 -- Users with blank country
 SELECT id, email, country
 FROM users
-WHERE BTRIM(country) = '';
+WHERE country ~ '^[[:space:]]*$';
 
 -- Users with blank status
 SELECT id, email, status
 FROM users
-WHERE BTRIM(status) = '';
+WHERE status ~ '^[[:space:]]*$';
 
 -- Duplicate order numbers
 SELECT order_number, COUNT(*) AS duplicate_count
@@ -201,12 +201,12 @@ HAVING COUNT(*) > 1;
 -- Orders with blank order numbers
 SELECT id, user_id, order_number, status
 FROM orders
-WHERE BTRIM(order_number) = '';
+WHERE order_number ~ '^[[:space:]]*$';
 
 -- Orders with blank status
 SELECT id, user_id, order_number, status
 FROM orders
-WHERE BTRIM(status) = '';
+WHERE status ~ '^[[:space:]]*$';
 
 -- Orders without existing users
 SELECT
@@ -245,12 +245,12 @@ WHERE u.id IS NULL;
 -- Addresses with blank city
 SELECT id, user_id, city, country
 FROM addresses
-WHERE BTRIM(city) = '';
+WHERE city ~ '^[[:space:]]*$';
 
 -- Addresses with blank country
 SELECT id, user_id, city, country
 FROM addresses
-WHERE BTRIM(country) = '';
+WHERE country ~ '^[[:space:]]*$';
 
 -- Orders with multiple payment records
 SELECT
@@ -300,12 +300,12 @@ WHERE amount <= 0;
 -- Payments with blank method
 SELECT id, order_id, payment_method, status
 FROM payments
-WHERE BTRIM(payment_method) = '';
+WHERE payment_method ~ '^[[:space:]]*$';
 
 -- Payments with blank status
 SELECT id, order_id, payment_method, status
 FROM payments
-WHERE BTRIM(status) = '';
+WHERE status ~ '^[[:space:]]*$';
 
 -- Users without age
 SELECT id, email, age
