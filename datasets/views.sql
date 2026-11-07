@@ -616,26 +616,28 @@ WITH rule_results (
 
     SELECT
         'non_positive_order_amount',
-        'Order amounts should be greater than zero',
+        'Order amounts should be valid numbers greater than zero',
         'CRITICAL',
         1::BIGINT,
         (
             SELECT COUNT(*)
             FROM orders
             WHERE amount <= 0
+               OR amount = 'NaN'::numeric
         )
 
     UNION ALL
 
     SELECT
         'non_positive_payment_amount',
-        'Payment amounts should be greater than zero',
+        'Payment amounts should be valid numbers greater than zero',
         'CRITICAL',
         0::BIGINT,
         (
             SELECT COUNT(*)
             FROM payments
             WHERE amount <= 0
+               OR amount = 'NaN'::numeric
         )
 
     UNION ALL

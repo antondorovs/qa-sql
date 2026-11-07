@@ -292,10 +292,11 @@ SELECT id, order_number, amount
 FROM orders
 WHERE amount < 0;
 
--- Payments with non-positive amount
+-- Payments with non-positive or non-numeric amounts
 SELECT id, order_id, status, amount
 FROM payments
-WHERE amount <= 0;
+WHERE amount <= 0
+   OR amount = 'NaN'::numeric;
 
 -- Payments with blank method
 SELECT id, order_id, payment_method, status
