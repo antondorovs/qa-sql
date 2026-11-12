@@ -27,6 +27,7 @@ COMMIT;
 \ir quality_report_contract.sql
 \ir blank_value_contract.sql
 \ir amount_contract.sql
+\ir temporal_order_contract.sql
 
 \echo 'Running query smoke tests'
 \ir ../queries/filters.sql
