@@ -63,6 +63,28 @@ BEGIN
 END
 $$;
 
+-- Constraints on different tables may have the same name in one schema.
+BEGIN;
+
+ALTER TABLE addresses
+    ADD CONSTRAINT users_pkey FOREIGN KEY (user_id) REFERENCES users (id) NOT VALID;
+
+DO $$
+BEGIN
+    IF (SELECT COUNT(*) FROM primary_key_contract_report) <> 4
+        OR EXISTS (
+            SELECT 1
+            FROM primary_key_contract_report
+            WHERE contract_status <> 'MATCH'
+        )
+    THEN
+        RAISE EXCEPTION 'A foreign key on another table altered the primary key report';
+    END IF;
+END
+$$;
+
+ROLLBACK;
+
 -- A partial index cannot satisfy a contract requiring full table coverage.
 BEGIN;
 
