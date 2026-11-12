@@ -6,11 +6,11 @@ still describing an impossible sequence of events.
 
 ## Rules
 
-The data quality baseline includes seven temporal and retention rules:
+The data quality baseline includes eight temporal and retention rules:
 
 - A deleted user must include a deletion timestamp.
 - A non-deleted user cannot include a deletion timestamp.
-- A deleted user cannot retain related addresses.
+- A deleted user cannot retain related orders or addresses.
 - A user cannot be deleted before the user was created.
 - An address cannot be created before its user.
 - An order cannot be created before its user.
@@ -33,6 +33,7 @@ FROM data_quality_rule_report
 WHERE rule_id IN (
     'deleted_user_without_timestamp',
     'non_deleted_user_with_timestamp',
+    'deleted_user_with_orders',
     'deleted_user_with_addresses',
     'user_deleted_before_created',
     'address_created_before_user',
@@ -43,7 +44,7 @@ ORDER BY rule_id;
 ```
 
 The detailed queries in `queries/qa_validation_queries.sql` return the affected
-record identifiers and both timestamps for investigation.
+record identifiers and the timestamps relevant to each rule.
 
 ## Testing guidance
 
