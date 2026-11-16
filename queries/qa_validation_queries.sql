@@ -161,9 +161,10 @@ SELECT
     active_user_count,
     primary_address_count,
     users_without_primary_address_count,
-    primary_address_coverage_percent
+    primary_address_coverage_percent,
+    active_users_without_primary_address_count
 FROM primary_address_coverage_summary
-WHERE active_user_count > primary_address_count;
+WHERE active_users_without_primary_address_count > 0;
 
 -- Duplicate emails
 SELECT email, COUNT(*) AS duplicate_count

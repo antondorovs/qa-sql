@@ -27,6 +27,7 @@ BEGIN
           AND primary_address_count = 2
           AND users_without_primary_address_count = 1
           AND primary_address_coverage_percent = 50.00
+          AND active_users_without_primary_address_count = 1
     ) THEN
         RAISE EXCEPTION 'Duplicate primary addresses inflated user coverage';
     END IF;

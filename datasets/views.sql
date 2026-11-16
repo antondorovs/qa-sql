@@ -295,7 +295,9 @@ SELECT
     ROUND(
         100.0 * COUNT(DISTINCT a.user_id) / NULLIF(COUNT(DISTINCT u.id), 0),
         2
-    ) AS primary_address_coverage_percent
+    ) AS primary_address_coverage_percent,
+    COUNT(DISTINCT u.id) FILTER (WHERE u.status = 'ACTIVE' AND a.id IS NULL)
+        AS active_users_without_primary_address_count
 FROM users u
 LEFT JOIN addresses a
     ON u.id = a.user_id
@@ -897,16 +899,9 @@ WITH rule_results (
         'MEDIUM',
         2::BIGINT,
         (
-            SELECT COUNT(DISTINCT u.country)
-            FROM users u
-            WHERE u.status = 'ACTIVE'
-              AND u.deleted_at IS NULL
-              AND NOT EXISTS (
-                  SELECT 1
-                  FROM addresses a
-                  WHERE a.user_id = u.id
-                    AND a.is_primary = TRUE
-              )
+            SELECT COUNT(*)
+            FROM primary_address_coverage_summary
+            WHERE active_users_without_primary_address_count > 0
         )
 
     UNION ALL
