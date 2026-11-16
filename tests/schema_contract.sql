@@ -207,3 +207,40 @@ END
 $$;
 
 ROLLBACK;
+
+-- A missing index and a unique replacement are distinct schema deviations.
+BEGIN;
+
+DROP INDEX orders_user_id_idx;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM index_contract_report
+        WHERE index_name = 'orders_user_id_idx'
+          AND contract_status = 'MISSING_INDEX'
+    ) THEN
+        RAISE EXCEPTION 'Missing order index was not reported';
+    END IF;
+END
+$$;
+
+-- The fixture has two orders for user 1. Remove one within this transaction.
+DELETE FROM orders WHERE id = 2;
+CREATE UNIQUE INDEX orders_user_id_idx ON orders (user_id);
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM index_contract_report
+        WHERE index_name = 'orders_user_id_idx'
+          AND expected_is_unique = FALSE
+          AND actual_is_unique = TRUE
+          AND contract_status = 'INDEX_DEFINITION_MISMATCH'
+    ) THEN
+        RAISE EXCEPTION 'Unique replacement passed the non-unique index contract';
+    END IF;
+END
+$$;
+
+ROLLBACK;
