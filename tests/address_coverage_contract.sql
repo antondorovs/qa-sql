@@ -67,6 +67,7 @@ BEGIN
           AND active_user_count = 2
           AND primary_address_count = 0
           AND users_without_primary_address_count = 2
+          AND active_users_without_primary_address_count = 2
           AND primary_address_coverage_percent = 0.00
     ) THEN
         RAISE EXCEPTION 'Users without addresses disappeared from coverage';
@@ -94,6 +95,7 @@ $$;
 
 UPDATE users SET status = 'INACTIVE' WHERE id IN (4, 8);
 UPDATE users SET status = 'ACTIVE', deleted_at = '2026-06-05 10:00:00' WHERE id = 8;
+DELETE FROM addresses WHERE id = 104;
 
 DO $$
 BEGIN
@@ -103,6 +105,16 @@ BEGIN
           AND actual_issue_count = 1
     ) THEN
         RAISE EXCEPTION 'Inactive or deleted users created an active address gap';
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM primary_address_coverage_summary
+        WHERE country = 'Hungary'
+          AND users_without_primary_address_count = 1
+          AND active_users_without_primary_address_count = 0
+    ) THEN
+        RAISE EXCEPTION 'Inactive or deleted users inflated the active gap count';
     END IF;
 END
 $$;
