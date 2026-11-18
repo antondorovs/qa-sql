@@ -47,4 +47,20 @@ failed, or refunded payment reports `PAYMENT_NOT_SUCCESSFUL`. Successful payment
 on other order statuses report `ORDER_NOT_MARKED_PAID`. Missing records and
 amount mismatches retain their earlier diagnostic priority.
 
+For primary-address coverage, use
+`active_users_without_primary_address_count` to identify active users who lack a
+primary address. The view excludes users with a deletion timestamp.
+`primary_address_count` counts address rows, so duplicate primary addresses can
+make it equal to the active-user count while another user still lacks an address.
+The coverage percentage counts distinct users across all included statuses.
+
+To list countries with active-user gaps:
+
+```sql
+SELECT country, active_user_count, active_users_without_primary_address_count
+FROM primary_address_coverage_summary
+WHERE active_users_without_primary_address_count > 0
+ORDER BY country;
+```
+
 Views do not store independent copies of these rows. Their results reflect the current data in the underlying tables.
