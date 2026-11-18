@@ -120,3 +120,32 @@ END
 $$;
 
 ROLLBACK;
+
+-- Duplicate primary-address issues count users, excluding secondary and NULL links.
+BEGIN;
+
+INSERT INTO addresses (
+    id, user_id, city, country, is_primary, created_at
+) VALUES
+    (201, 1, 'New York', 'USA', TRUE, '2026-06-04'),
+    (202, 1, 'New York', 'USA', TRUE, '2026-06-04'),
+    (203, 2, 'Toronto', 'Canada', TRUE, '2026-06-04'),
+    (204, NULL, 'New York', 'USA', TRUE, '2026-06-04'),
+    (205, NULL, 'New York', 'USA', TRUE, '2026-06-04'),
+    (206, 3, 'Berlin', 'Germany', FALSE, '2026-06-04'),
+    (207, 3, 'Berlin', 'Germany', FALSE, '2026-06-04');
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM data_quality_rule_report
+        WHERE rule_id = 'duplicate_primary_address'
+          AND actual_issue_count = 2
+          AND baseline_status = 'REGRESSION'
+    ) THEN
+        RAISE EXCEPTION 'Expected one duplicate primary-address issue per user';
+    END IF;
+END
+$$;
+
+ROLLBACK;
