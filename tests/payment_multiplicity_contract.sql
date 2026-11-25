@@ -21,4 +21,35 @@ BEGIN
 END
 $$;
 
+-- Resolving each duplicate group must update the report immediately.
+DELETE FROM payments WHERE id IN (101, 102);
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM data_quality_rule_report
+        WHERE rule_id = 'multiple_payments_for_order'
+          AND actual_issue_count = 1
+          AND baseline_status = 'REGRESSION'
+    ) THEN
+        RAISE EXCEPTION 'Resolving one payment group did not leave one issue';
+    END IF;
+END
+$$;
+
+DELETE FROM payments WHERE id = 103;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM data_quality_rule_report
+        WHERE rule_id = 'multiple_payments_for_order'
+          AND actual_issue_count = 0
+          AND baseline_status = 'MATCH'
+    ) THEN
+        RAISE EXCEPTION 'Resolved payment groups did not restore the baseline';
+    END IF;
+END
+$$;
+
 ROLLBACK;
