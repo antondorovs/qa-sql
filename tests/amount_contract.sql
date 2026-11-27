@@ -1,22 +1,38 @@
--- A numeric NaN must not pass the positive amount checks.
+-- Check invalid amounts and the smallest and largest valid stored values.
 BEGIN;
 
-UPDATE orders SET amount = 'NaN'::numeric WHERE id = 1;
-UPDATE payments SET amount = 'NaN'::numeric WHERE id = 1;
-
 DO $$
+DECLARE
+    scenario RECORD;
+    mismatched_rule TEXT;
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM data_quality_rule_report
-        WHERE rule_id = 'non_positive_order_amount'
-          AND actual_issue_count = 2
-    ) OR NOT EXISTS (
-        SELECT 1 FROM data_quality_rule_report
-        WHERE rule_id = 'non_positive_payment_amount'
-          AND actual_issue_count = 1
-    ) THEN
-        RAISE EXCEPTION 'Order and payment amount rules must reject NaN';
-    END IF;
+    FOR scenario IN
+        SELECT * FROM (VALUES
+            ('NaN'::numeric, 2, 1, 'REGRESSION'),
+            (0.00::numeric, 2, 1, 'REGRESSION'),
+            (-0.01::numeric, 2, 1, 'REGRESSION'),
+            (0.01::numeric, 1, 0, 'MATCH'),
+            (99999999.99::numeric, 1, 0, 'MATCH')
+        ) AS cases(amount, order_issues, payment_issues, expected_status)
+    LOOP
+        UPDATE orders SET amount = scenario.amount WHERE id = 1;
+        UPDATE payments SET amount = scenario.amount WHERE id = 1;
+
+        SELECT expected.rule_id INTO mismatched_rule
+        FROM (VALUES
+            ('non_positive_order_amount', scenario.order_issues),
+            ('non_positive_payment_amount', scenario.payment_issues)
+        ) AS expected(rule_id, issue_count)
+        LEFT JOIN data_quality_rule_report report USING (rule_id)
+        WHERE report.actual_issue_count IS DISTINCT FROM expected.issue_count
+           OR report.baseline_status IS DISTINCT FROM scenario.expected_status
+        LIMIT 1;
+
+        IF FOUND THEN
+            RAISE EXCEPTION 'Unexpected count or baseline for % with amount %',
+                mismatched_rule, scenario.amount;
+        END IF;
+    END LOOP;
 END
 $$;
 
